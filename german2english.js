@@ -1,4 +1,4 @@
-document.body.style.border = "5px solid red";
+//document.body.style.border = "5px solid red";
 //console.log("The add-on is working");
 
 const langenscheidtURL = "https://en.langenscheidt.com/german-english/";
@@ -7,8 +7,7 @@ const displayblock = document.createElement('div');
 displayblock.id = 'German2English';
 document.body.appendChild(displayblock);
 
-browser.storage.local.get()
-.then(res=>{ console.log(res) });
+//browser.storage.local.get().then(res=>{ console.log(res) });
 
 /*
 const spelling = document.createElement('div');
@@ -250,6 +249,7 @@ function render_translation(Word){
 }
 
 document.onmouseup = function(){
+    
     let highlighted = getSelectionText();
 
     if(!highlighted){
@@ -278,15 +278,16 @@ document.onmouseup = function(){
 
     browser.storage.local.get()
     .then(res=>{
-        res = res.all_words;
-        console.log(res);
+        if(JSON.stringify(res)!=JSON.stringify({})) res = res.all_words;
+        else res = [];
+        //console.log(res);
         let indexofword = res.findIndex(ele => ele.spell == highlighted);
         if(indexofword == -1) {
             //console.log("fetching")
             fetchTranslation(highlighted);
         }
         else {
-            //console.log('found in db');
+            //console.log('found in local storage');
             render_translation(res[indexofword]);
         }
     })
