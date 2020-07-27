@@ -30,7 +30,6 @@
     
     "permissions": [
         "*://en.langenscheidt.com/german-english/*",
-        "webRequest",
         "storage"
      ]
 }
