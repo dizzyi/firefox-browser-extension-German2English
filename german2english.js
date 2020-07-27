@@ -85,9 +85,9 @@ function langenscheidt(html , word){
 
     let all = html.match(findall);
 
-    let findeach = /btn-inner\">[\w,-?!_ ]+?</ig;
+    let findeach = /btn-inner\">[\w,-?!_() ]+?</ig;
     //let findsee = /see[\w\W]+?<\/a>/ig;
-    let findsee = /see[\w\W]+?<\/a>/ig;
+    let findsee = /col2.*?see[\w\W]+?<span class=.ref.>[\s]*?<a href=.\/german-english[\w\W]+?<\/a>[\s]*<\/span>/ig;
 
     if(!all){
         //console.log("can't find");
@@ -99,12 +99,12 @@ function langenscheidt(html , word){
     all.forEach( (element, index) => {
         let tempfindmeaning = element.match(findeach);
         let tempfindsee = element.match(findsee);
-       //console.log(element);
+        //console.log(element);
 
         if(tempfindsee){
             tempfindsee = tempfindsee[0];
            //console.log(tempfindsee);
-            let findsee2 = /<a.+?<\/a>/ig;
+            let findsee2 = /<a href=.\/german-english.+?<\/a>/ig;
             let see = tempfindsee.match(findsee2);
             if(see){
                 see = see[0];
@@ -139,7 +139,8 @@ function langenscheidt(html , word){
     results.definition.forEach(element =>{
         let tempmeaning = new Meaning();
         element.forEach(ele =>{
-            if(!ele.includes('More examples...'))tempmeaning.definitions.push(ele);
+            if( !(ele.includes('...') && ele.includes('More')) )
+               tempmeaning.definitions.push(ele);
         })
         searchWord.meanings.push(tempmeaning);
     })
@@ -185,8 +186,12 @@ function render_loading(word){
     `;
 
     //displayblock.innerHTML = '';
-    let spelling = document.createElement("div");
-    spelling.id = "spelling";
+    let spelling = document.getElementById("spelling");
+    if(!spelling) {
+        spelling = document.createElement('div');
+        spelling.id = "spelling";
+        displayblock.appendChild(spelling);
+    }
     spelling.innerText = word;
     spelling.style = `
         color : #3aeaea;
@@ -195,17 +200,24 @@ function render_loading(word){
         font-size: 22px;
         text-transform: capitalize;
     `;
-    displayblock.appendChild(spelling);
 
-    let ruler = document.createElement('hr');
+    let ruler = document.getElementById('ruler');
+    if(!ruler) {
+        ruler = document.createElement('hr');
+        ruler.id = 'ruler';
+        displayblock.appendChild(ruler);
+    }
     ruler.style = ` 
         border-top: 1px solid #add3d3; 
         margin: 7px;
     `;
-    displayblock.appendChild(ruler);
-
-    let defin = document.createElement('div');
-    defin.id = 'defin';
+    
+    let defin = document.getElementById("defin");
+    if(!defin) {
+        defin = document.createElement('div');
+        defin.id = "defin";
+        displayblock.appendChild(defin);
+    }
     defin.innerText  = "loading...";
     defin.style =`
         width: auto;
@@ -215,7 +227,26 @@ function render_loading(word){
         color:#b7bfbf;
         overflow-y: auto;
     `;
-    displayblock.appendChild(defin);
+    let link = document.getElementById('link');
+    if(!link){
+        link =  document.createElement('a');
+        link.id = 'link';
+        displayblock.appendChild(link);
+    }
+    //link.target ="_blank";
+    
+    link.href = langenscheidtURL + word;
+    link.innerText = `See the whole text @langenscheidt.com`;
+    link.style =`
+        display: inline-block;
+        color: #875c12;
+        font-size: 12px;
+        padding-bottom: 5px;
+        text-align: center;
+        width: 100%;
+        text-decoration: underline;
+    `;
+    displayblock.appendChild(link);
 }
 
 function render_translation(Word){
@@ -264,22 +295,8 @@ function render_translation(Word){
        //console.log(alsosee);
         defin.appendChild(alsosee);
     };
-
-    let link = document.createElement('a');
-    link.href = langenscheidtURL + Word.spell;
-    //link.target ="_blank";
-    link.innerText = `See the whole text @langenscheidt.com`;
-    link.style =`
-        display: inline-block;
-        color: #875c12;
-        padding: 10px;
-        font-size: 12px;
-        text-align: center;
-        width: 100%;
-        text-decoration: underline;
-    `;
-    displayblock.appendChild(link);
 }
+
 
 document.onmouseup = function(){
     

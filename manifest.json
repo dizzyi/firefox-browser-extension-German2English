@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name" : "German-Dictionary",
-    "version": "1.0.0",
+    "version": "0.8.0",
 
     "description": "This add on will help you check the dictionary whenever you highlight vocabulary",
 
