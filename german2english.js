@@ -7,7 +7,7 @@ const displayblock = document.createElement('div');
 displayblock.id = 'German2English';
 document.body.appendChild(displayblock);
 
-//browser.storage.local.get().then(res=>{ console.log(res) });
+//browser.storage.local.get().then(res=>{console.log(res) });
 
 /*
 const spelling = document.createElement('div');
@@ -40,6 +40,7 @@ class Word{
     constructor(spell){
         this.spell = spell;
         this.meanings = [];
+        this.see = '';
     }
 }
 
@@ -85,6 +86,8 @@ function langenscheidt(html , word){
     let all = html.match(findall);
 
     let findeach = /btn-inner\">[\w, ]+?</ig;
+    //let findsee = /see[\w\W]+?<\/a>/ig;
+    let findsee = /see[\w\W]+?<\/a>/ig;
 
     if(!all){
         //console.log("can't find");
@@ -95,6 +98,25 @@ function langenscheidt(html , word){
 
     all.forEach( (element, index) => {
         let tempfindmeaning = element.match(findeach);
+        let tempfindsee = element.match(findsee);
+       //console.log(element);
+
+        if(tempfindsee){
+            tempfindsee = tempfindsee[0];
+           //console.log(tempfindsee);
+            let findsee2 = /<a.+?<\/a>/ig;
+            let see = tempfindsee.match(findsee2);
+            if(see){
+                see = see[0];
+                see = see.match(/>.*</ig);
+                if(see){
+                    see = see[0];
+                   //console.log(see);
+                    see = see.slice(1,-1);
+                    searchWord.see = see;
+                }
+            }
+        }
 
         if(!tempfindmeaning) return;
 
@@ -136,7 +158,7 @@ function langenscheidt(html , word){
         browser.storage.local.set( { 'all_words' : res } );
     })
     .catch(err=>{
-        console.log(err);
+       //console.log(err);
     })
 
     return searchWord;
@@ -152,6 +174,7 @@ function render_loading(word){
     width: auto;
 
     min-height: 150px;
+    max-height: 90vh;
 
     min-width:  250px;
     max-width: 22vw;
@@ -162,6 +185,7 @@ function render_loading(word){
     box-shadow: 5px 5px 10px #1e1e1e;
     `;
 
+    //displayblock.innerHTML = '';
     let spelling = document.createElement("div");
     spelling.id = "spelling";
     spelling.innerText = word;
@@ -229,8 +253,13 @@ function render_translation(Word){
         });
 
         defin.appendChild(meaningdiv)
-    })
-    try{
+    });
+    if(Word.see){
+        let alsosee = document.createElement('div')
+        alsosee.innerHTML = `See <a href=${langenscheidtURL}${Word.see}>${Word.see}</a>`;
+       //console.log(alsosee);
+        defin.appendChild(alsosee);
+    };
     let link = document.createElement('a');
     link.href = langenscheidtURL + Word.spell;
     //link.target ="_blank";
@@ -238,14 +267,13 @@ function render_translation(Word){
     link.style =`
         display: inline-block;
         color: #875c12;
-        padding: 7px;
+        padding: 5px;
         font-size: 12px;
         text-align: center;
         width: 100%;
+        text-decoration: underline;
     `;
     displayblock.appendChild(link);
-    }
-    catch(e){console.log(e)};
 }
 
 document.onmouseup = function(){
@@ -280,15 +308,15 @@ document.onmouseup = function(){
     .then(res=>{
         if(JSON.stringify(res)!=JSON.stringify({})) res = res.all_words;
         else res = [];
-        //console.log(res);
+       //console.log(res);
         let indexofword = res.findIndex(ele => ele.spell == highlighted);
         if(indexofword == -1) {
-            //console.log("fetching")
+           //console.log("fetching")
             fetchTranslation(highlighted);
         }
         else {
             //console.log('found in local storage');
             render_translation(res[indexofword]);
         }
-    })
+    });
 }
