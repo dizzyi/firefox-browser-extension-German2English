@@ -85,7 +85,7 @@ function langenscheidt(html , word){
 
     let all = html.match(findall);
 
-    let findeach = /btn-inner\">[\w, ]+?</ig;
+    let findeach = /btn-inner\">[\w,-?!_ ]+?</ig;
     //let findsee = /see[\w\W]+?<\/a>/ig;
     let findsee = /see[\w\W]+?<\/a>/ig;
 
@@ -139,7 +139,7 @@ function langenscheidt(html , word){
     results.definition.forEach(element =>{
         let tempmeaning = new Meaning();
         element.forEach(ele =>{
-            tempmeaning.definitions.push(ele);
+            if(!ele.includes('More examples...'))tempmeaning.definitions.push(ele);
         })
         searchWord.meanings.push(tempmeaning);
     })
@@ -174,7 +174,6 @@ function render_loading(word){
     width: auto;
 
     min-height: 150px;
-    max-height: 90vh;
 
     min-width:  250px;
     max-width: 22vw;
@@ -209,8 +208,8 @@ function render_loading(word){
     defin.id = 'defin';
     defin.innerText  = "loading...";
     defin.style =`
-        width: 100%;
-        height: 100%;
+        width: auto;
+        height: auto;
         max-height: 75vh;
         text-align: center;
         color:#b7bfbf;
@@ -232,7 +231,7 @@ function render_translation(Word){
         let meaningdiv = document.createElement('div');
 
         meaningdiv.style =`
-            margin: 10px;
+            margin: 7px 7px 0 7px;
             text-align : left; 
             border-bottom: 1px solid #add3d3; 
         `;
@@ -254,12 +253,18 @@ function render_translation(Word){
 
         defin.appendChild(meaningdiv)
     });
-    if(Word.see){
+    if(Word.see != ''){
         let alsosee = document.createElement('div')
-        alsosee.innerHTML = `See <a href=${langenscheidtURL}${Word.see}>${Word.see}</a>`;
+        alsosee.innerHTML = `Related word: <a href=${langenscheidtURL}${Word.see}>${Word.see}</a>`;
+        alsosee.style = `
+            font-size : 15px;
+            text-align: center;
+            padding: 5px;
+        `;
        //console.log(alsosee);
         defin.appendChild(alsosee);
     };
+
     let link = document.createElement('a');
     link.href = langenscheidtURL + Word.spell;
     //link.target ="_blank";
@@ -267,7 +272,7 @@ function render_translation(Word){
     link.style =`
         display: inline-block;
         color: #875c12;
-        padding: 5px;
+        padding: 10px;
         font-size: 12px;
         text-align: center;
         width: 100%;
