@@ -9,15 +9,16 @@ document.body.appendChild(displayblock);
 
 //browser.storage.local.get().then(res=>{console.log(res) });
 
-/*
-const spelling = document.createElement('div');
-spelling.id = 'spelling';
-displayblock.appendChild(spelling);
-
-const allDefinition = document.createElement('div');
-allDefinition.id = 'defintions';
-displayblock.appendChild(allDefinition);
-*/
+function say(text, lang){
+    let msg = new SpeechSynthesisUtterance();
+    msg.volume = 1;
+    msg.rate = 0.5;
+    msg.pitch = 2;
+    msg.text = text;
+    msg.lang = lang;
+    speechSynthesis.speak(msg);
+    return;
+}
 
 // a meaning is a (list) definition(s) with no or some example;
 class Meaning{
@@ -310,16 +311,21 @@ document.onmouseup = function(){
         return;
     }
 
-    highlighted = highlighted.split(/[ .,\?\!\*\-]/);
+    highlighted = highlighted.split(/[ .,\?\!\*\-]()/);
 
     //console.log(highlighted);
 
-    if(highlighted.length>1 && highlighted[1]!=''){
+    if(highlighted.length>2 && highlighted[1]!=''){
         //more then one word don't support
         return;
     }
 
     highlighted = highlighted[0].toLocaleLowerCase();
+
+    let spl = document.getElementById('spelling');
+    if(spl){
+        if(spl.innerHTML==highlighted) return;
+    }
     
     //console.log( highlighted );
     //console.log( langenscheidtURL + highlighted );
